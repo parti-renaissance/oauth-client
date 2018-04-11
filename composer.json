@@ -2,7 +2,7 @@
     "name": "enmarche/oauth-client",
     "description": "Provide simple client_credentials OAuth client for En-Marche OAuth server",
     "homepage": "https://github.com/EnMarche/oauth-client",
-    "license": "proprietary",
+    "license": "GPL-3.0",
     "type": "library",
     "autoload": {
         "psr-4": {
