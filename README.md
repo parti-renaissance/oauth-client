@@ -27,18 +27,22 @@ composer require enmarche/oauth-client
 
 ## Example of integration with Symfony
 
-This example use [csa/guzzle-bundle](https://github.com/csarrazi/CsaGuzzleBundle)
+This example uses [csa/guzzle-bundle](https://github.com/csarrazi/CsaGuzzleBundle)
 
 ```yaml
 services:
     _defaults:
         autowire: true
         autoconfigure: true
+        public: false
 
     EnMarche\OAuthClient\OAuthAccessTokenProvider:
         arguments:
             $client: '@csa_guzzle.client.auth_server'
             $cache: '@app.cache.access_token.simple'
+            $clientId: '%env(OAUTH_CLIENT_ID)%'
+            $clientSecret: '%env(OAUTH_CLIENT_SECRET)%'
+            $scopes: [scope1, scope2]
 
     EnMarche\OAuthClient\Guzzle\OAuthMiddleware:
         tags: [{name: 'csa_guzzle.middleware', alias: 'oauth', priority: 100}]
@@ -78,8 +82,33 @@ csa_guzzle:
                     Accept: 'application/json'
 ```
 
-The OAuth middleware is the one that add the Authorization, that's why it is disabled for `auth_server` client. All
+The OAuth middleware is the one that add the Authorization header, that's why it is disabled for `auth_server` client. All
 the others clients get the middleware activated automatically.
+
+## OAuth firewall for Symfony
+
+It validates any given access token (With Authorization header) against EnMarche OAuth server.
+
+This example uses a similar config than the previous one for [csa/guzzle-bundle](https://github.com/csarrazi/CsaGuzzleBundle)
+
+Then you can configure the guard :
+
+```yaml
+services:
+    EnMarche\OAuthClient\OAuthAuthenticator:
+            arguments: ['@csa_guzzle.client.auth_server']
+            
+security:
+    firewalls:
+        main:
+            stateless: true
+            guard:
+                authenticators:
+                    - 'EnMarche\OAuthClient\OAuthAuthenticator'
+```
+
+If authentication is successful, the token storage will be loaded with a `\EnMarche\OAuthClient\User\ApiUser` user
+and access token scopes as roles prefixed with `ROLE_OAUTH_SCOPE_`   
 
 ## Tests
 

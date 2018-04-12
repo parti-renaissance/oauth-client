@@ -12,15 +12,17 @@ class OAuthAccessTokenProvider
     private $cache;
     private $oauthClientId;
     private $oauthClientSecret;
+    private $scopes;
 
     private const ACCESS_TOKEN_CACHE_KEY = 'accessToken';
 
-    public function __construct(ClientInterface $client, CacheInterface $cache, string $clientId, string $clientSecret)
+    public function __construct(ClientInterface $client, CacheInterface $cache, string $clientId, string $clientSecret, array $scopes = [])
     {
         $this->client = $client;
         $this->cache = $cache;
         $this->oauthClientId = $clientId;
         $this->oauthClientSecret = $clientSecret;
+        $this->scopes = $scopes;
     }
 
     public function requestAccessToken(): string
@@ -39,7 +41,7 @@ class OAuthAccessTokenProvider
                     'client_id' => $this->oauthClientId,
                     'client_secret' => $this->oauthClientSecret,
                     'grant_type' => 'client_credentials',
-                    'scope' => 'read:typeforms',
+                    'scope' => implode(' ', $this->scopes),
                 ],
             ]
         );
