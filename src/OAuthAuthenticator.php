@@ -2,6 +2,7 @@
 
 namespace EnMarche\OAuthClient;
 
+use EnMarche\OAuthClient\User\ApiUser;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\GuzzleException;
@@ -13,9 +14,10 @@ use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
 
-abstract class OAuthAuthenticator extends AbstractGuardAuthenticator
+class OAuthAuthenticator extends AbstractGuardAuthenticator
 {
     private $client;
 
@@ -46,6 +48,12 @@ abstract class OAuthAuthenticator extends AbstractGuardAuthenticator
         }
 
         return $credentials;
+    }
+
+    public function getUser($credentials, UserProviderInterface $userProvider)
+    {
+        // No real user associated to the user. We are just validating the credentials against the authorization server.
+        return new ApiUser();
     }
 
     /**
