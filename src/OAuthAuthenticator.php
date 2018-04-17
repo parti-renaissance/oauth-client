@@ -43,11 +43,7 @@ class OAuthAuthenticator extends AbstractGuardAuthenticator
     {
         $credentials = trim(preg_replace('/^(?:\s+)?Bearer\s/', '', $request->headers->get('Authorization')));
 
-        if (!$credentials) {
-            throw new AuthenticationException('Invalid token');
-        }
-
-        return $credentials;
+        return $credentials ?: null;
     }
 
     public function getUser($credentials, UserProviderInterface $userProvider)
